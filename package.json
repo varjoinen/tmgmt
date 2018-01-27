@@ -1,0 +1,15 @@
+{
+  "name": "tmgmt",
+  "version": "1.0.0",
+  "description": "Commandline time management",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "timemanagement",
+    "cli"
+  ],
+  "author": "Antti Varjoinen",
+  "license": "MIT"
+}
