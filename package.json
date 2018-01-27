@@ -2,7 +2,11 @@
   "name": "tmgmt",
   "version": "1.0.0",
   "description": "Commandline time management",
-  "main": "index.js",
+  "main": "bin/app.js",
+  "preferGlobal": true,
+  "bin": {
+    "tmgmt": "bin/app.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,5 +15,9 @@
     "cli"
   ],
   "author": "Antti Varjoinen",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "moment": "^2.20.1",
+    "sqlite3": "^3.1.13"
+  }
 }
