@@ -21,12 +21,25 @@ const toDisplayFormat = (minutes) => {
 }
 
 program
-  .parse(process.argv);
+    .option('-s --start <date>', 'start date (inclusive), yyyyMMdd')
+    .option('-e --end <date>', 'end date (inclusive), yyyyMMdd')
+    .parse(process.argv);
 
 try {
     const db = database.getDatabase('./tmgmt.sqlite');
 
-    database.getCurrentWeekTimReports(db, (err, rows) => {
+    if ( program.start ) {
+        util.validateDateString(program.start);
+    }
+
+    if ( program.end ) {
+        util.validateDateString(program.end);
+    }
+
+    const startDate = program.start ? moment(program.start) : moment().startOf('isoweek');
+    const endDate = program.end ? moment(program.end) : moment().endOf('isoweek');
+
+    database.getTimeReports(db, startDate, endDate, (err, rows) => {
         if ( err ) {
             throw err;
         }
@@ -35,15 +48,16 @@ try {
             head: ['id', 'description', 'tags', 'time', 'date']
         });
 
-        let totalMinutes = 0;
-        rows.forEach((row) => {
-            totalMinutes += row.time_in_minutes;
-            t.push([row.id, util.take(row.description, 100), util.take(row.tags, 50), toDisplayFormat(row.time_in_minutes), row.date.split(' ')[0]]);
-        })
+        if ( rows.length ) {
+            let totalMinutes = 0;
+            rows.forEach((row) => {
+                totalMinutes += row.time_in_minutes;
+                t.push([row.id, util.take(row.description, 100), util.take(row.tags, 50), toDisplayFormat(row.time_in_minutes), row.date.split(' ')[0]]);
+            })
 
-        t.push(['Total', '', '', toDisplayFormat(totalMinutes), '']);
-
-        console.log('\n Week ' + moment().isoWeek());
+            t.push(['Total', '', '', toDisplayFormat(totalMinutes), '']);
+        }
+        console.log('\nReports between ' + startDate.format('YYYY-MM-DD') + ' - ' + endDate.format('YYYY-MM-DD'));
         console.log(t.toString());
     });
 } catch (e) {
