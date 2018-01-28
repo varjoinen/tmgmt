@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const program = require('commander');
+const moment = require('moment');
 const database = require('../lib/db');
 const util = require('../lib/util');
 const table = require('cli-table');
@@ -25,7 +26,7 @@ program
 try {
     const db = database.getDatabase('./tmgmt.sqlite');
 
-    database.getTimeReports(db, (err, rows) => {
+    database.getCurrentWeekTimReports(db, (err, rows) => {
         if ( err ) {
             throw err;
         }
@@ -34,10 +35,15 @@ try {
             head: ['id', 'description', 'tags', 'time', 'date']
         });
 
+        let totalMinutes = 0;
         rows.forEach((row) => {
+            totalMinutes += row.time_in_minutes;
             t.push([row.id, util.take(row.description, 100), util.take(row.tags, 50), toDisplayFormat(row.time_in_minutes), row.date.split(' ')[0]]);
         })
 
+        t.push(['Total', '', '', toDisplayFormat(totalMinutes), '']);
+
+        console.log('\n Week ' + moment().isoWeek());
         console.log(t.toString());
     });
 } catch (e) {

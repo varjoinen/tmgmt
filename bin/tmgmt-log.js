@@ -132,7 +132,6 @@ try {
 
     let values = parseArguments(args);
 
-    // TODO refactor
     const date = values['date'] ? moment(values['date']) : moment();
     const time = values['time']
     const description = values['description']
@@ -140,7 +139,7 @@ try {
     database.insertTimeReport(
         db,
         description,
-        date.format('YYYY-MM-DD HH:mm:ss.SSS'),
+        date.format('YYYY-MM-DD'),
         util.parseTags(description).join(),
         parseTimeToMinutes(time))
 } catch (e) {
