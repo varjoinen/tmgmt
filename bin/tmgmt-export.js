@@ -1,25 +1,10 @@
 const program = require('commander');
 const moment = require('moment');
-const table = require('cli-table');
 const bluebird = require('bluebird');
 const database = require('../lib/db');
 const util = require('../lib/util');
-const report = require('../lib/report');
 const validation = require('../lib/validation');
-
-const toDisplayFormat = (minutes) => {
-    if ( minutes !== 0 && !minutes ) {
-        throw new Error("Invalid minutes value: " + minutes)
-    }
-    let mins = minutes % 60;
-    let hours = (minutes - mins) / 60;
-
-    if ( mins == 0 ) {
-        return hours + 'h'
-    } else {
-        return hours + 'h ' + mins + 'm'
-    }
-}
+const report = require('../lib/report');
 
 const printReports = (reports, startDate, endDate) => {
     let t = new table({
@@ -58,6 +43,6 @@ database.getDatabase('./tmgmt.sqlite')
         return report.getReports(db, startDate, endDate, program.tag);
     })
     .then((reports) => {
-        return printReports(reports, startDate, endDate);
+        console.log(JSON.stringify({reports}));
     })
-.catch((e) => { console.log(e.message); });
+.catch((e) => { console.log(e); });
