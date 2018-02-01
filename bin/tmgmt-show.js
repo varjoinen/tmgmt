@@ -5,9 +5,10 @@ const moment = require('moment');
 const database = require('../lib/db');
 const util = require('../lib/util');
 const table = require('cli-table');
+const bluebird = require('bluebird');
 
 const toDisplayFormat = (minutes) => {
-    if ( !minutes ) {
+    if ( minutes !== 0 && !minutes ) {
         throw new Error("Invalid minutes value: " + minutes)
     }
     let mins = minutes % 60;
@@ -20,14 +21,7 @@ const toDisplayFormat = (minutes) => {
     }
 }
 
-program
-    .option('-s --start <date>', 'start date (inclusive), yyyyMMdd')
-    .option('-e --end <date>', 'end date (inclusive), yyyyMMdd')
-    .parse(process.argv);
-
-try {
-    const db = database.getDatabase('./tmgmt.sqlite');
-
+const validateParams = (p) => {
     if ( program.start ) {
         util.validateDateString(program.start);
     }
@@ -36,30 +30,67 @@ try {
         util.validateDateString(program.end);
     }
 
-    const startDate = program.start ? moment(program.start) : moment().startOf('isoweek');
-    const endDate = program.end ? moment(program.end) : moment().endOf('isoweek');
-
-    database.getTimeReports(db, startDate, endDate, (err, rows) => {
-        if ( err ) {
-            throw err;
-        }
-
-        let t = new table({
-            head: ['id', 'description', 'tags', 'time', 'date']
-        });
-
-        if ( rows.length ) {
-            let totalMinutes = 0;
-            rows.forEach((row) => {
-                totalMinutes += row.time_in_minutes;
-                t.push([row.id, util.take(row.description, 100), util.take(row.tags, 50), toDisplayFormat(row.time_in_minutes), row.date.split(' ')[0]]);
-            })
-
-            t.push(['Total', '', '', toDisplayFormat(totalMinutes), '']);
-        }
-        console.log('\nReports between ' + startDate.format('YYYY-MM-DD') + ' - ' + endDate.format('YYYY-MM-DD'));
-        console.log(t.toString());
-    });
-} catch (e) {
-    console.error(e.message);
+    if ( program.tag ) {
+        util.validateTag(program.tag);
+    }
 }
+
+const getReports = (db, startDate, endDate, tag) => {
+    return database.getTimeReports(db, startDate, endDate, program.tag)
+        .then((reports) => {
+            return bluebird.map(reports, (report) => {
+                return addTags(db, report);
+            });
+        });
+}
+
+const addTags = (db, report) => {
+    return database.getTags(db, report.id)
+        .then((tags) => {
+            let clone = Object.assign({}, report);
+            clone.tags = tags.join(',');
+
+            return clone;
+        });
+}
+
+const printReports = (reports, startDate, endDate) => {
+    let t = new table({
+        head: ['id', 'description', 'tags', 'time', 'date']
+    });
+
+    let totalMinutes = 0;
+
+    if ( reports.length ) {
+        reports.forEach((report) => {
+            totalMinutes += report.time_in_minutes;
+
+            t.push([report.id, util.take(report.description, 100), util.take(report.tags, 50), toDisplayFormat(report.time_in_minutes), report.date.split(' ')[0]]);
+        });
+    }
+
+    t.push(['Total', '', '', toDisplayFormat(totalMinutes), '']);
+
+    console.log('Time reports between ' + startDate.format('YYYY-MM-DD') + ' - ' + endDate.format('YYYY-MM-DD'));
+    console.log(t.toString());
+}
+
+program
+    .option('-s --start <date>', 'start date (inclusive), yyyyMMdd')
+    .option('-e --end <date>', 'end date (inclusive), yyyyMMdd')
+    .option('-t --tag <tag>', 'tag to match')
+    .parse(process.argv);
+
+validateParams(program);
+
+const startDate = program.start ? moment(program.start) : moment().startOf('isoweek');
+const endDate = program.end ? moment(program.end) : moment().endOf('isoweek');
+
+database.getDatabase('./tmgmt.sqlite')
+    .then((db) => {
+        return getReports(db, startDate, endDate, program.tag);
+    })
+    .then((reports) => {
+        return printReports(reports, startDate, endDate);
+    })
+.catch((e) => { console.log(e.message); });

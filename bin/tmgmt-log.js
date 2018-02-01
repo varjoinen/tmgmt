@@ -2,6 +2,7 @@
 
 const program = require('commander');
 const moment = require('moment');
+const bluebird = require('bluebird');
 const database = require('../lib/db');
 const util = require('../lib/util');
 
@@ -50,7 +51,7 @@ parseTimeToMinutes = (string) => {
             'minutes');
     } else {
         if ( /([0-9]+)([a-zA-Z]+)([0-9]+)/.test(string) ) {
-            throw new Error('Invalid time: ' + string);
+            throw new Error('Invalid time: ' + string + '. Valid formats are eg. "7h 30m", 7,30, 7.30, "7 30"');
         }
 
         let unit = util.containsLetter(string) ? util.getLetters(string).join('') : 'minutes';
@@ -115,7 +116,7 @@ validateArguments = (args) => {
     }
 
     if ( argCount != 3 && argCount != 2 ) {
-        console.log('Usage: tmgmt [date, format yyyyMMdd] time "description"');
+        console.log('Usage: tmgmt [date, format yyyyMMdd] time description');
         process.exit(1);
     }
 }
@@ -123,25 +124,23 @@ validateArguments = (args) => {
 program
   .parse(process.argv);
 
-try {
-    const db = database.getDatabase('./tmgmt.sqlite');
 
-    let args = program.args;
+database.getDatabase('./tmgmt.sqlite')
+    .then((db) => {
+        let args = program.args;
 
-    validateArguments(args);
+        validateArguments(args);
 
-    let values = parseArguments(args);
+        let values = parseArguments(args);
 
-    const date = values['date'] ? moment(values['date']) : moment();
-    const time = values['time']
-    const description = values['description']
+        const date = values['date'] ? moment(values['date']) : moment();
+        const time = values['time']
+        const description = values['description']
 
-    database.insertTimeReport(
-        db,
-        description,
-        date.format('YYYY-MM-DD'),
-        util.parseTags(description).join(),
-        parseTimeToMinutes(time))
-} catch (e) {
-    console.error(e.message);
-}
+        return database.insertTimeReport(
+            db,
+            description,
+            date.format('YYYY-MM-DD'),
+            util.parseTags(description),
+            parseTimeToMinutes(time))
+    }).catch(e => console.log(e.message));
