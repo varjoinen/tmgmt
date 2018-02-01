@@ -10,7 +10,6 @@ Still in early stages, may eat your dog and look ugly. :)
 npm install -g tmgmt
 ```
 
-
 ## Configuration
 
 By default application stores time reports to `./tmgmt.sqlite` database file. Path can be changes with `TMGMT_DB_PATH=` environment variable.
@@ -36,6 +35,8 @@ Time reports between 2018-01-29 - 2018-02-04
 
 >tmgmt export
 {"reports":[{"id":1,"description":"Nice project with a tag: #tag1","date":"2018-02-01","time_in_minutes":450,"tags":"tag1"}]}
+
+>tmgmt rm 1
 
 ```
 

@@ -29,12 +29,6 @@ const parseArguments = (args) => {
 const validateArguments = (args) => {
     let argCount = args.length
 
-    let withDate = false
-
-    if ( argCount === 3 ) {
-        withDate = true;
-    }
-
     if ( argCount != 3 && argCount != 2 ) {
         console.log('Usage: tmgmt [date, format yyyyMMdd] time description');
         process.exit(1);

@@ -3,8 +3,8 @@
   "version": "1.0.1",
   "description": "Commandline time management",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/varjoinen/tmgmt.git"
+    "type": "git",
+    "url": "https://github.com/varjoinen/tmgmt.git"
   },
   "main": "bin/tmgmt.js",
   "preferGlobal": true,

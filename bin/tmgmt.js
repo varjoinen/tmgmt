@@ -11,4 +11,5 @@ program
     .command('log', 'log time report')
     .command('show','show time reports')
     .command('export', 'export time reports')
+    .command('rm', 'remove report by id')
     .parse(process.argv)
