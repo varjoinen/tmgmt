@@ -34,7 +34,7 @@ program
     .option('-t --tag <tag>', 'tag to match')
     .parse(process.argv);
 
-validation.validateParams(program);
+validation.validateParams(program, false);
 
 const startDate = program.start ? moment(program.start) : moment().startOf('isoweek');
 const endDate = program.end ? moment(program.end) : moment().endOf('isoweek');

@@ -46,10 +46,10 @@ const printReports = (reports, startDate, endDate) => {
 program
     .option('-s --start <date>', 'start date (inclusive), yyyyMMdd')
     .option('-e --end <date>', 'end date (inclusive), yyyyMMdd')
-    .option('-t --tag <tag>', 'tag to match')
+    .option('-t --tag <tag>', 'tag to match (without hash)')
     .parse(process.argv);
 
-validation.validateParams(program);
+validation.validateParams(program, false);
 
 const startDate = program.start ? moment(program.start) : moment().startOf('isoweek');
 const endDate = program.end ? moment(program.end) : moment().endOf('isoweek');
