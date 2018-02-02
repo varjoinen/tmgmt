@@ -33,7 +33,7 @@ const printReports = (reports, startDate, endDate) => {
         reports.forEach((report) => {
             totalMinutes += report.time_in_minutes;
 
-            t.push([report.id, util.take(report.description, 100), util.take(report.tags, 50), toDisplayFormat(report.time_in_minutes), report.date.split(' ')[0]]);
+            t.push([report.id, util.take(report.description, 100), util.take(report.tags.join(','), 50), toDisplayFormat(report.time_in_minutes), report.date.split(' ')[0]]);
         });
     }
 
