@@ -5,7 +5,6 @@ const database = require('../lib/db');
 const util = require('../lib/util');
 const validation = require('../lib/validation');
 const report = require('../lib/report');
-const env = require('../lib/env');
 
 program
   .option('-s --start <date>', 'start date (inclusive), yyyyMMdd')
@@ -18,11 +17,8 @@ validation.validateParams(program, false);
 const startDate = program.start ? moment(program.start) : moment().startOf('isoweek');
 const endDate = program.end ? moment(program.end) : moment().endOf('isoweek');
 
-database.getDatabase(env.getEnv().dbFilePath)
-  .then((db) => {
-    return report.getReports(db, startDate, endDate, program.tag);
-  })
+report.getReports(database, startDate, endDate, program.tag)
   .then((reports) => {
     console.log(JSON.stringify({reports}));
   })
-.catch((e) => { console.log(e); });
+  .catch((e) => { console.log(e); });

@@ -6,7 +6,6 @@ const database = require('../lib/db');
 const util = require('../lib/util');
 const report = require('../lib/report');
 const validation = require('../lib/validation');
-const env = require('../lib/env');
 
 const toDisplayFormat = (minutes) => {
   if ( minutes !== 0 && !minutes ) {
@@ -54,11 +53,8 @@ validation.validateParams(program, false);
 const startDate = program.start ? moment(program.start) : moment().startOf('isoweek');
 const endDate = program.end ? moment(program.end) : moment().endOf('isoweek');
 
-database.getDatabase(env.getEnv().dbFilePath)
-  .then((db) => {
-    return report.getReports(db, startDate, endDate, program.tag);
-  })
+report.getReports(database, startDate, endDate, program.tag)
   .then((reports) => {
     return printReports(reports, startDate, endDate);
   })
-.catch((e) => { console.log(e.message); });
+  .catch((e) => { console.log(e.message); });

@@ -3,7 +3,6 @@ const moment = require('moment');
 const bluebird = require('bluebird');
 const database = require('../lib/db');
 const util = require('../lib/util');
-const env = require('../lib/env');
 
 const parseArguments = (args) => {
   let keys
@@ -39,8 +38,7 @@ program
   .parse(process.argv);
 
 
-database.getDatabase(env.getEnv().dbFilePath)
-  .then((db) => {
+bluebird.try(() => {
     let args = program.args;
 
     validateArguments(args);
@@ -52,7 +50,6 @@ database.getDatabase(env.getEnv().dbFilePath)
     const description = values['description']
 
     return database.insertTimeReport(
-      db,
       description,
       date.format('YYYY-MM-DD'),
       util.parseTags(description),
