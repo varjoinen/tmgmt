@@ -1,4 +1,6 @@
-# TMGMT personal time reporting too
+# TMGMT personal time reporting tool
+[![Build Status](https://travis-ci.org/varjoinen/tmgmt.svg?branch=master)](https://travis-ci.org/varjoinen/tmgmt)
+
 
 Simple time reporting tool featuring a CLI interface/view and json export.
 
@@ -12,7 +14,7 @@ npm install -g tmgmt
 
 ## Configuration
 
-By default application stores time reports to `./tmgmt.sqlite` database file. Path can be changes with `TMGMT_DB_PATH=` environment variable.
+By default application stores time reports to `./tmgmt.sqlite` database file. Path can be changes with `TMGMT_DB_PATH` environment variable.
 
 ## Usage
 
