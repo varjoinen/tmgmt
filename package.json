@@ -12,7 +12,8 @@
     "tmgmt": "bin/tmgmt.js"
   },
   "scripts": {
-    "test": "nyc mocha test/**/*.js"
+    "test": "nyc mocha test/**/*.js",
+    "acceptance": "robot -d target/acceptance test/acceptance/acceptance.robot"
   },
   "keywords": [
     "timemanagement",

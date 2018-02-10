@@ -3,9 +3,11 @@ sudo: false
 node_js:
   - "9"
 install:
-  - npm install
+  - "npm install"
+  - "pip install -r test/acceptance/requirements.txt"
 script:
   - npm test
+  - npm run acceptance
 cache:
   directories:
     - "node_modules"
