@@ -72,3 +72,38 @@ ${db_path}        ${target_path}/tmgmt_test.sqlite
   And Exported Report With Index 0 Should Have 450 Minutes
   And Exported Report With Index 0 Should Have Following Description "Test 3.0 #tag1 #tag2"
   And Exported Report With Index 0 Should Have 2 Tags
+
+3.1 Should export only current week by default
+  Given There Is No Database
+  When Time Report Is Logged With Following Parameters  20180101 7,30 "Test 3.1 past"
+  And Time Report Is Logged With Following Parameters  7,30 "Test 3.1 current"
+  And Time Report Is Logged With Following Parameters  29990101 7,30 "Test 3.1 future"
+  And Export Is Run With Following Parameters  ""
+  Then Returned Export Value Should Be Valid Json
+  And Export Should Contain 1 Time Report(s)
+  And Exported Report With Index 0 Should Have Following Description "Test 3.1 current"
+
+3.2 Should filter export by tag
+  Given There Is No Database
+  When Time Report Is Logged With Following Parameters  7,30 "Test 3.2 #tag1 #tag2"
+  And Time Report Is Logged With Following Parameters  7,30 "Test 3.2 #tag3 #tag4"
+  And Export Is Run With Following Parameters  -t tag4
+  Then Returned Export Value Should Be Valid Json
+  And Export Should Contain 1 Time Report(s)
+  And Exported Report With Index 0 Should Have Following Description "Test 3.2 #tag3 #tag4"
+
+3.3 Should filter export by start date
+  Given There Is No Database
+  When Time Report Is Logged With Following Parameters  20180101 7,30 "Test 3.1 #tag1 #tag2"
+  And Time Report Is Logged With Following Parameters  7,30 "Test 3.1 #tag3 #tag4"
+  And Export Is Run With Following Parameters  -s 20180101
+  Then Returned Export Value Should Be Valid Json
+  And Export Should Contain 2 Time Report(s)
+
+3.3 Should filter export by end date
+  Given There Is No Database
+  When Time Report Is Logged With Following Parameters  29990101 7,30 "Test 3.1 #tag1 #tag2"
+  And Time Report Is Logged With Following Parameters  7,30 "Test 3.1 #tag3 #tag4"
+  And Export Is Run With Following Parameters  -e 29990101
+  Then Returned Export Value Should Be Valid Json
+  And Export Should Contain 2 Time Report(s)
