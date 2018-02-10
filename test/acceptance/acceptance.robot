@@ -94,16 +94,16 @@ ${db_path}        ${target_path}/tmgmt_test.sqlite
 
 3.3 Should filter export by start date
   Given There Is No Database
-  When Time Report Is Logged With Following Parameters  20180101 7,30 "Test 3.1 #tag1 #tag2"
-  And Time Report Is Logged With Following Parameters  7,30 "Test 3.1 #tag3 #tag4"
+  When Time Report Is Logged With Following Parameters  20180101 7,30 "Test 3.3 #tag1 #tag2"
+  And Time Report Is Logged With Following Parameters  7,30 "Test 3.3 #tag3 #tag4"
   And Export Is Run With Following Parameters  -s 20180101
   Then Returned Export Value Should Be Valid Json
   And Export Should Contain 2 Time Report(s)
 
-3.3 Should filter export by end date
+3.4 Should filter export by end date
   Given There Is No Database
-  When Time Report Is Logged With Following Parameters  29990101 7,30 "Test 3.1 #tag1 #tag2"
-  And Time Report Is Logged With Following Parameters  7,30 "Test 3.1 #tag3 #tag4"
+  When Time Report Is Logged With Following Parameters  29990101 7,30 "Test 3.4 #tag1 #tag2"
+  And Time Report Is Logged With Following Parameters  7,30 "Test 3.4 #tag3 #tag4"
   And Export Is Run With Following Parameters  -e 29990101
   Then Returned Export Value Should Be Valid Json
   And Export Should Contain 2 Time Report(s)
