@@ -35,8 +35,20 @@ Time reports between 2018-01-29 - 2018-02-04
 │ Total │                                │      │ 7h 30m │            │
 └───────┴────────────────────────────────┴──────┴────────┴────────────┘
 
->tmgmt export
-{"reports":[{"id":1,"description":"Nice project with a tag: #tag1","date":"2018-02-01","time_in_minutes":450,"tags":"tag1"}]}
+>tmgmt export | jq
+{
+  "reports": [
+    {
+      "id": 1,
+      "description": "Nice project with a tag: #tag1",
+      "date": "2018-02-11",
+      "time_in_minutes": 450,
+      "tags": [
+        "tag1"
+      ]
+    }
+  ]
+}
 
 >tmgmt rm 1
 
